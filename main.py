@@ -1,8 +1,18 @@
+import json
+from s3_read_write import s3_image_read, generate_unique_info, s3_image_write
+from image_standarisation import rotate_image, check_image_size
 
-# Task 1: Read images from s3
+def lambda_hamdler(event, context):
 
-# Task 2: Preprocess images
+    bucket_name = event['bucketName']
+    in_key = event['inputKey']
+    out_key = event['outputKey']
 
-# Task 3: Get response from gcloud vision api
+    # Read images from s3
 
-# Task 4: Save processed images and corresponding JSON files
+
+    # Image standardisation
+
+    # Push images to s3
+
+    return {}
