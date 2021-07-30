@@ -13,3 +13,18 @@ To test the Boto3 functions for reading and writing to s3 you will need to uploa
 Next, if you have not already done so, run 'aws configure' in your command line to set up your aws security credentials, secret id, default region etc.
 
 # Lambda Function 
+
+Runtime: Python 3.7
+Region: 'eu-west-1'
+Memory allocation: 512mB
+Timeout: 30 seconds
+
+OpenCV and Numpy lambda layers found here https://github.com/keithrozario/Klayers. 
+
+Layers used in testing (Layers are region specific):
+OpenCV - arn:aws:lambda:eu-west-1:113088814899:layer:Klayers-python37-opencv-python-headless:13
+Numpy - arn:aws:lambda:eu-west-1:113088814899:layer:Klayers-python37-numpy:11
+
+Enviroment variables: 
+out_bucket: opteeq-standardised-images
+dynamodb_table_name: opteeq-dataset-table
