@@ -22,9 +22,13 @@ Timeout: 30 seconds
 OpenCV and Numpy lambda layers found here https://github.com/keithrozario/Klayers. 
 
 Layers used in testing (Layers are region specific):
+
 OpenCV - arn:aws:lambda:eu-west-1:113088814899:layer:Klayers-python37-opencv-python-headless:13
+
 Numpy - arn:aws:lambda:eu-west-1:113088814899:layer:Klayers-python37-numpy:11
 
 Enviroment variables: 
+
 out_bucket: opteeq-standardised-images
+
 dynamodb_table_name: opteeq-dataset-table
