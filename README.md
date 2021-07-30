@@ -10,6 +10,6 @@ Then install the relevant packages from the requirements.txt file using 'pip3 in
 
 To test the Boto3 functions for reading and writing to s3 you will need to upload a test image to an s3 bucket and replace the values for the s3_bucket_name, key and region variables in the cell bellow. You can use the same bucket directory structure as shown here if you wish.
 
-Next, if you have not already done so, run 'aws configure' in your command line to set up your aws security credientials, secret id, default region etc.
+Next, if you have not already done so, run 'aws configure' in your command line to set up your aws security credentials, secret id, default region etc.
 
 # Lambda Function 
