@@ -6,6 +6,7 @@ import uuid
 import time
 import os
 
+
 # Function to read image from s3
 def s3_image_read(bucket_name: str, key: str) -> 'numpy.ndarray':
     """
@@ -18,18 +19,19 @@ def s3_image_read(bucket_name: str, key: str) -> 'numpy.ndarray':
     s3_resource = boto3.resource('s3')
     bucket = s3_resource.Bucket(bucket_name)
 
+    ext = (".jpg", ".jpeg", ".png", ".tiff")
+
     # Try and load an image using boto3 and OpenCV,
     # Print exception if extension is not OpenCV compatible or there is a boto3 error
     try:
-        if key.endswith(".jpg") or key.endswith(".jpeg") or key.endswith(".png") or key.endswith(".tiff"):
+        if key.lower().endswith(tuple(ext)):
             content = bucket.Object(key).get().get('Body').read()
+            img = cv2.imdecode(np.asarray(bytearray(content)), cv2.IMREAD_COLOR)
+            return img
         else:
             print('Invalid file extension. Must be .jpg, .jpeg, .png or .tiff')
     except botocore.exceptions.ClientError as e:
         return e.response
-
-    img = cv2.imdecode(np.asarray(bytearray(content)), cv2.IMREAD_COLOR)
-    return img
 
 # Function to generate unique id for filename
 def generate_unique_id() -> str:
