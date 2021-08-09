@@ -2,7 +2,6 @@ import boto3
 import botocore
 import cv2
 import numpy as np
-import uuid
 import time
 import os
 
@@ -33,16 +32,6 @@ def s3_image_read(bucket_name: str, key: str) -> 'numpy.ndarray':
     except botocore.exceptions.ClientError as e:
         return e.response
 
-# Function to generate unique id for filename
-def generate_unique_id() -> str:
-    """
-    Generate unique uuid and unix timestamp for saving files
-    :return: Randomly generated uuid
-    """
-    unique_id = str(uuid.uuid4()) # Uuid4 generates a random uuid and we convert it to a string
-    return unique_id
-
-
 # Function to write images to s3
 def s3_image_write(bucket_name: str, processed_img: 'numpy.ndarray', filename: str) -> 'Str':
     """
@@ -66,5 +55,36 @@ def s3_image_write(bucket_name: str, processed_img: 'numpy.ndarray', filename: s
     try:
         bucket.upload_file(local_path, filename)
         return "Image upload success"
+    except botocore.exceptions.ClientError as e:
+        return e.response
+
+
+def db_write(in_key: str, filename : str, timestamp: str, table_name: str, region: str = 'eu-west-1') -> str:
+    """
+    Write an image to AWS DynamoDB
+    :param table_name: DynamoDB Table name
+    :param processed_img: Standardised image array
+    :param region: AWS region name where database is located
+    :return: None
+    """
+    # Extract name of uploader and increment information from file name
+    uploader_name, _ = in_key.split('_')[:2]
+
+    # Creation of boto3 resource for dynamodb
+    table = boto3.resource('dynamodb', region_name=region).Table(table_name)
+
+    content = {
+        "standKey": filename,
+        "rawKey": in_key,
+        "uploaderName": uploader_name,
+        "uploadTime": timestamp,
+        "initAnotKey": '',
+        "finalAnotKey": '',
+        "anotName": '',
+        "finalAnotTime": 0
+    }
+    try:
+        response = table.put_item(Item=content)
+        return response
     except botocore.exceptions.ClientError as e:
         return e.response

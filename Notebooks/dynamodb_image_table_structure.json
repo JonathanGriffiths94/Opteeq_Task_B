@@ -1,0 +1,10 @@
+{
+    "rawKey": str,
+    "standKey": str, PRIMARY KEY,
+    "initAnotKey": str,
+    "finalAnotKey": str,
+    "uploadName": str,
+    "uploadTime": int,
+    "anotName": str,
+    "anotTime": int
+}

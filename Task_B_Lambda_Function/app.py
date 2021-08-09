@@ -1,7 +1,8 @@
 import json
 import logging
 import os
-from s3_read_write import s3_image_read, s3_image_write, generate_unique_id
+import uuid
+from s3_read_write import s3_image_read, s3_image_write, db_write
 from image_standardisation import standardise_image
 
 
@@ -12,20 +13,21 @@ def lambda_handler(event, context):
 
     # Decode json input event and extract bucket name and key
     s3_event_body = event["Records"][0]["body"]
+    timestamp = event["Records"][0]["attributes"]["ApproximateFirstReceiveTimestamp"]
     s3_event = json.loads(s3_event_body)
 
     in_bucket = s3_event["Records"][0]["s3"]["bucket"]["name"]
     in_key = s3_event["Records"][0]["s3"]["object"]["key"]
-    timestamp = s3_event["Records"][0]["object"]["ApproximateFirstReceiveTimestamp"]
+
 
     # Get output bucket name from enviroment variable
     out_bucket = os.environ['out_bucket']
-    table_name = os.environ['table_name']
+    table_name = os.environ['dynamodb_table_name']
 
     # Function call to generate unique id and timestamp for filename
-    unique_id = generate_unique_id()
+    unique_id = str(uuid.uuid4())
 
-    filename = 'IMG-{}-{}.jpg'.format(unique_id, timestamp)
+    filename = '{}.jpg'.format(unique_id)
 
     # Function call to s3 bucket image read
     img = s3_image_read(in_bucket, in_key)
@@ -34,9 +36,14 @@ def lambda_handler(event, context):
     stand_img = standardise_image(img)
 
     # Function call to s3 image push
-    response = s3_image_write(out_bucket, stand_img, filename)
+    s3_response = s3_image_write(out_bucket, stand_img, filename)
+
+    # Function call to create item in dynamoDB
+    dynamodb_response = db_write(in_key, filename, timestamp, table_name)
 
     return {
         "statusCode": 200,
-        "body": response
+        "body": {"s3_response": s3_response,
+                 "dynamodb_response": dynamodb_response
+                 }
     }
